@@ -188,13 +188,6 @@ export const defaultQueryEditor = {
   tableOptions: [],
   functionNames: [],
   hideLeftBar: false,
-  schemaOptions: [
-    {
-      value: 'main',
-      label: 'main',
-      title: 'main',
-    },
-  ],
   templateParams: '{}',
 };
 
@@ -688,6 +681,7 @@ export const query = {
   sql: 'SELECT * FROM something',
   description: 'test description',
   schema: 'test schema',
+  resultsKey: 'test',
 };
 
 export const queryId = 'clientId2353';

@@ -42,16 +42,19 @@ const mockStore = configureStore(middlewares);
 const store = mockStore(initialState);
 
 beforeEach(() => {
-  fetchMock.get('glob:*/api/v1/database/**', { result: [] });
-  fetchMock.get('glob:*/api/v1/database/*/schemas/?*', { result: [] });
-  fetchMock.get('glob:*/superset/tables/**', {
-    options: [
+  fetchMock.get('glob:*/api/v1/database/?*', { result: [] });
+  fetchMock.get('glob:*/api/v1/database/*/schemas/?*', {
+    count: 2,
+    result: ['main', 'new_schema'],
+  });
+  fetchMock.get('glob:*/api/v1/database/*/tables/*', {
+    count: 1,
+    result: [
       {
         label: 'ab_user',
         value: 'ab_user',
       },
     ],
-    tableLength: 1,
   });
 });
 
@@ -88,10 +91,10 @@ test('table should be visible when expanded is true', async () => {
   const { container } = await renderAndWait(mockedProps, store);
 
   const dbSelect = screen.getByRole('combobox', {
-    name: 'Select database or type database name',
+    name: 'Select database or type to search databases',
   });
   const schemaSelect = screen.getByRole('combobox', {
-    name: 'Select schema or type schema name',
+    name: 'Select schema or type to search schemas',
   });
   const dropdown = screen.getByText(/Table/i);
   const abUser = screen.queryAllByText(/ab_user/i);
@@ -160,7 +163,7 @@ test('When changing database the table list must be updated', async () => {
 
 test('ignore schema api when current schema is deprecated', async () => {
   const invalidSchemaName = 'None';
-  await renderAndWait(
+  const { rerender } = await renderAndWait(
     mockedProps,
     mockStore({
       ...initialState,
@@ -175,7 +178,7 @@ test('ignore schema api when current schema is deprecated', async () => {
   );
 
   expect(await screen.findByText(/Database/i)).toBeInTheDocument();
-  expect(screen.queryByText(/None/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/None/i)).toBeInTheDocument();
   expect(fetchMock.calls()).not.toContainEqual(
     expect.arrayContaining([
       expect.stringContaining(
@@ -183,31 +186,9 @@ test('ignore schema api when current schema is deprecated', async () => {
       ),
     ]),
   );
-});
-
-test('fetches schema api when current schema is among the list', async () => {
-  const validSchema = 'schema1';
-  await renderAndWait(
-    mockedProps,
-    mockStore({
-      ...initialState,
-      sqlLab: {
-        ...initialState.sqlLab,
-        unsavedQueryEditor: {
-          id: defaultQueryEditor.id,
-          schema: validSchema,
-          schemaOptions: [{ name: validSchema, value: validSchema }],
-        },
-      },
-    }),
-  );
-
-  expect(await screen.findByText(/schema1/i)).toBeInTheDocument();
-  expect(fetchMock.calls()).toContainEqual(
-    expect.arrayContaining([
-      expect.stringContaining(
-        `/tables/${mockedProps.database.id}/${validSchema}/`,
-      ),
-    ]),
+  rerender();
+  // Deselect the deprecated schema selection
+  await waitFor(() =>
+    expect(screen.queryByText(/None/i)).not.toBeInTheDocument(),
   );
 });

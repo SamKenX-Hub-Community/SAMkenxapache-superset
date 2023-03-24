@@ -371,10 +371,9 @@ const timezoneHeaderStyle = (theme: SupersetTheme) => css`
   margin: ${theme.gridUnit * 3}px 0;
 `;
 
-const inputSpacer = (theme: SupersetTheme) =>
-  css`
-    margin-right: ${theme.gridUnit * 3}px;
-  `;
+const inputSpacer = (theme: SupersetTheme) => css`
+  margin-right: ${theme.gridUnit * 3}px;
+`;
 
 type NotificationAddStatus = 'active' | 'disabled' | 'hidden';
 
@@ -571,7 +570,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
     const shouldEnableForceScreenshot = contentType === 'chart' && !isReport;
     const data: any = {
       ...currentAlert,
-      type: isReport ? 'Report' : 'Alert',
+      type: isReport ? t('Report') : t('Alert'),
       force_screenshot: shouldEnableForceScreenshot || forceScreenshot,
       validator_type: conditionNotNull ? 'not null' : 'operator',
       validator_config_json: conditionNotNull
