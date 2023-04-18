@@ -43,7 +43,12 @@ import { getClientErrorObject } from 'src/utils/getClientErrorObject';
 import withToasts from 'src/components/MessageToasts/withToasts';
 import { isFeatureEnabled } from 'src/featureFlags';
 import TagType from 'src/types/TagType';
-import { addTag, deleteTaggedObjects, fetchTags, OBJECT_TYPES } from 'src/tags';
+import {
+  addTag,
+  deleteTaggedObjects,
+  fetchTags,
+  OBJECT_TYPES,
+} from 'src/features/tags/tags';
 import { loadTags } from 'src/components/Tags/utils';
 
 const StyledFormItem = styled(FormItem)`
@@ -555,7 +560,7 @@ const PropertiesModal = ({
             </StyledFormItem>
             <p className="help-block">
               {t(
-                'Roles is a list which defines access to the dashboard. Granting a role access to a dashboard will bypass dataset level checks. If no roles are defined, then the dashboard is available to all roles.',
+                'Roles is a list which defines access to the dashboard. Granting a role access to a dashboard will bypass dataset level checks. If no roles are defined, regular access permissions apply.',
               )}
             </p>
           </Col>
